@@ -491,7 +491,7 @@ def init_global_vars(dist_dir, app_name, args):
     return True
 
 
-def update_license_file(app_name):
+def update_license_file(app_name, manufacturer):
     if app_name == "RustDesk":
         return
     license_file = Path(sys.argv[0]).parent.joinpath("Package/License.rtf")
@@ -499,7 +499,17 @@ def update_license_file(app_name):
         license_content = f.read()
     license_content = license_content.replace("website rustdesk.com and other ", "")
     license_content = license_content.replace("RustDesk", app_name)
-    license_content = re.sub(r"Purslane(?: Tech Pte\.)? Ltd", app_name, license_content, flags=re.IGNORECASE)
+    # The data controller named in the EULA is the legal entity, not the product
+    # name. Replacing it with `app_name` (upstream behaviour) produced a licence
+    # that attributed everything to e.g. "UstaDesk" instead of "Nano intel OOO".
+    # Use a callable so a manufacturer containing regex escapes is inserted
+    # literally.
+    license_content = re.sub(
+        r"Purslane(?: Tech Pte\.)? Ltd",
+        lambda _m: manufacturer,
+        license_content,
+        flags=re.IGNORECASE,
+    )
     with open(license_file, "w", encoding="utf-8") as f:
         f.write(license_content)
 
@@ -533,7 +543,7 @@ if __name__ == "__main__":
     if not init_global_vars(dist_dir, app_name, args):
         sys.exit(-1)
 
-    update_license_file(app_name)
+    update_license_file(app_name, args.manufacturer)
 
     if not gen_pre_vars(args, dist_dir):
         sys.exit(-1)
