@@ -30,6 +30,7 @@ CompanyName = "Nano intel OOO"
 LegalCopyright = "Copyright © 2026 Nano intel OOO. Based on RustDesk, Copyright © 2026 Purslane Tech Pte. Ltd. Licensed under AGPL-3.0."
 ProductName = "UstaDesk"
 OriginalFilename = "ustadesk.exe"
+InternalName = "ustadesk"
 FileDescription = "UstaDesk Remote Desktop"
 #ProductVersion = ""
 

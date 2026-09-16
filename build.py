@@ -463,7 +463,10 @@ def build_flutter_windows(version, features, skip_portable_pack):
                   './rustdesk_portable.exe')
     print(
         f'output location: {os.path.abspath(os.curdir)}/rustdesk_portable.exe')
-    os.rename('./rustdesk_portable.exe', f'./ustadesk-{version}-install.exe')
+    # os.replace, not os.rename: on Windows os.rename refuses to overwrite an
+    # existing file (WinError 183) while on POSIX it silently replaces it, so a
+    # second build in the same tree failed only on Windows.
+    os.replace('./rustdesk_portable.exe', f'./ustadesk-{version}-install.exe')
     print(
         f'output location: {os.path.abspath(os.curdir)}/ustadesk-{version}-install.exe')
 
