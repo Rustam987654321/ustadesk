@@ -59,7 +59,10 @@ if(VCPKG_TARGET_IS_WINDOWS AND NOT VCPKG_TARGET_IS_MINGW)
         set(LIBVPX_ARCH_DIR "ARM")
     endif()
 
-    if(VCPKG_PLATFORM_TOOLSET STREQUAL v143)
+    # vs17 project generation for any modern MSVC toolset. VS 2022 reports v143;
+    # VS 18 reports v145 and has no v143 MSBuild integration at all, so treating
+    # v145 like v143 keeps the generated projects current there.
+    if(VCPKG_PLATFORM_TOOLSET STREQUAL v143 OR VCPKG_PLATFORM_TOOLSET STREQUAL v144 OR VCPKG_PLATFORM_TOOLSET STREQUAL v145)
         set(LIBVPX_TARGET_VS "vs17")
     elseif(VCPKG_PLATFORM_TOOLSET STREQUAL v142)
         set(LIBVPX_TARGET_VS "vs16")
@@ -97,6 +100,12 @@ if(VCPKG_TARGET_IS_WINDOWS AND NOT VCPKG_TARGET_IS_MINGW)
         WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-tmp"
         LOGNAME generate-${TARGET_TRIPLET})
 
+    # vcpkg_msbuild_install() takes its /p:PlatformToolset from the variable
+    # VCPKG_PLATFORM_TOOLSET in this scope. The triplet keeps v143 so vcpkg's own
+    # "valid Visual Studio instance" check passes (the 14.44 compiler is present),
+    # but Visual Studio 18 ships no v143 MSBuild integration at all -- only v145 --
+    # so the MSBuild step itself must be told v145 or it dies with MSB8020.
+    set(VCPKG_PLATFORM_TOOLSET v145)
     vcpkg_msbuild_install(
         SOURCE_PATH "${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-tmp"
         PROJECT_SUBPATH vpx.vcxproj
