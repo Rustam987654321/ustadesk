@@ -1224,12 +1224,13 @@ pub fn portable_service_logon_helper_paths() -> Option<(PathBuf, PathBuf)> {
     // If users report redirected/non-standard LocalAppData issues, switch to:
     // `BaseDirs::new()?.data_local_dir()` for Known Folder-based resolution.
     let user_dir = hbb_common::directories_next::UserDirs::new()?;
+    let app_name = crate::get_app_name().to_lowercase();
     let dir = user_dir
         .home_dir()
         .join("AppData")
         .join("Local")
-        .join("rustdesk-sciter");
-    let dst = dir.join("rustdesk.exe");
+        .join(format!("{app_name}-sciter"));
+    let dst = dir.join(format!("{app_name}.exe"));
     Some((dir, dst))
 }
 
@@ -1988,9 +1989,10 @@ fn get_public_base_dir() -> PathBuf {
 
 #[inline]
 pub fn get_custom_client_staging_dir() -> PathBuf {
+    let app_name = crate::get_app_name();
     get_public_base_dir()
-        .join("RustDesk")
-        .join("RustDeskCustomClientStaging")
+        .join(&app_name)
+        .join(format!("{app_name}CustomClientStaging"))
 }
 
 /// Removes the custom client staging directory.
