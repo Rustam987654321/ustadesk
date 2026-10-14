@@ -50,6 +50,7 @@ mod ta;
 mod ge;
 mod fi;
 mod ml;
+mod uz;
 
 pub const LANGS: &[(&str, &str)] = &[
     ("en", "English"),
@@ -101,6 +102,7 @@ pub const LANGS: &[(&str, &str)] = &[
     ("ml", "മലയാളം"),
     ("hi", "हिंदी"),
     ("gu", "ગુજરાતી"),
+    ("uz", "O'zbekcha"),
 ];
 
 pub(crate) fn cjk_ui_unavailable() -> bool {
@@ -214,6 +216,7 @@ pub fn translate_locale(name: String, locale: &str) -> String {
         "ml" => ml::T.deref(),
         "hi" => hi::T.deref(),
         "gu" => gu::T.deref(),
+        "uz" => uz::T.deref(),
         _ => en::T.deref(),
     };
     let (name, placeholder_value) = extract_placeholder(&name);
