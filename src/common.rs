@@ -938,8 +938,13 @@ pub fn is_modifier(evt: &KeyEvent) -> bool {
     }
 }
 
+/// UstaDesk: the upstream update channel (api.rustdesk.com + github.com/rustdesk
+/// releases) would download and install the original RustDesk next to UstaDesk.
+/// Keep this `false` until UstaDesk has its own release server.
+pub const UPSTREAM_UPDATE_ENABLED: bool = false;
+
 pub fn check_software_update() {
-    if is_custom_client() {
+    if !UPSTREAM_UPDATE_ENABLED || is_custom_client() {
         return;
     }
     let opt = LocalConfig::get_option(keys::OPTION_ENABLE_CHECK_UPDATE);
@@ -952,6 +957,10 @@ pub fn check_software_update() {
 // Because the url is always `https://api.rustdesk.com/version/latest`.
 #[tokio::main(flavor = "current_thread")]
 pub async fn do_check_software_update() -> hbb_common::ResultType<()> {
+    if !UPSTREAM_UPDATE_ENABLED {
+        *SOFTWARE_UPDATE_URL.lock().unwrap() = String::new();
+        return Ok(());
+    }
     let (request, url) =
         hbb_common::version_check_request(hbb_common::VER_TYPE_RUSTDESK_CLIENT.to_string());
     let proxy_conf = Config::get_socks();

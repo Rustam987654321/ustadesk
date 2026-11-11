@@ -1,0 +1,76 @@
+<!--
+UstaDesk : O'zbekcha (uz-UZ) MSI localization.
+
+Mirrors Package.en-us.wxl string-for-string, so the WiX build has a complete
+Uzbek set for every !(loc.X) this project's own .wxs files reference.
+
+Two deliberate conventions:
+
+  * The upstream product name is left in the source text wherever the English
+    file has it. res/msi/preprocess.py:replace_app_name_in_langs() rewrites
+    every occurrence of that brand in Package/Language/*.wxl to the configured
+    app name, so keeping it here means this file stays correct if the product
+    is ever renamed again. (This paragraph deliberately never spells the brand
+    out, because the rewrite is a blind text replacement and would otherwise
+    turn these instructions into a false statement.)
+
+  * The apostrophe in o'/g' is ASCII (U+0027), matching src/lang/uz.rs. The
+    proper Uzbek turned comma (U+02BB) is not representable in codepage 1252,
+    and every string here stays inside that codepage.
+
+Content is pure ASCII on purpose: no BOM and no XML declaration, exactly like
+the en-us sources, so the encoding can never be guessed wrong.
+-->
+<WixLocalization Culture="uz-uz" Codepage="1252"
+	xmlns="http://wixtoolset.org/schemas/v4/wxl">
+
+	<String Id="SummaryCodepage" Value="1252" />
+	<String Id="ProductLanguage" Value="1091" />
+
+	<!-- General strings -->
+	<String Id="DowngradeError" Value="[ProductName] ning yangiroq versiyasi allaqachon o'rnatilgan." />
+
+	<String Id="AR_Comment" Value="RustDesk" />
+
+	<String Id="F_App" Value="RustDesk" />
+	<String Id="F_App_Desc" Value="RustDesk - asosiy dasturlarni o'rnatish." />
+
+	<String Id="SC_Uninstall" Value="RustDesk'ni o'chirish" />
+	<String Id="SC_Uninstall_Desc" Value="RustDesk'ni yoki uning ayrim qismlarini kompyuterdan o'chiradi" />
+
+	<!-- Client related strings -->
+	<String Id="F_Client" Value="Mijoz" />
+	<String Id="F_Client_Desc" Value="Foydalanuvchi interfeysi. Media fayllarni ijro etadi." />
+	<String Id="F_Client_Plugins" Value="Plaginlar" />
+	<String Id="F_Client_Plugins_Desc" Value="Mijoz uchun plaginlar." />
+	<String Id="F_LAVFilters" Value="LAV Filters" />
+	<String Id="F_LAVFilters_Desc" Value="Eng yaxshi audio va video ijro tajribasi uchun tavsiya etilgan DirectShow filtrlari." />
+
+	<String Id="SC_Client" Value="RustDesk" />
+	<String Id="SC_Client_Desc" Value="RustDesk'ni ishga tushirish." />
+
+	<String Id="SC_Client_Tray" Value="RustDesk treyi" />
+	<String Id="SC_Client_Tray_Desc" Value="RustDesk treyini ishga tushirish." />
+
+	<!-- Server related strings -->
+	<String Id="F_Server" Value="Server" />
+	<String Id="F_Server_Desc" Value="RustDesk'ning server qismi. MediaLibrary va boshqa xizmatlarni taqdim etadi." />
+	<String Id="F_Server_Plugins" Value="Plaginlar" />
+	<String Id="F_Server_Plugins_Desc" Value="Server uchun plaginlar." />
+
+	<String Id="Service_DisplayName" Value="RustDesk xizmati" />
+	<String Id="Service_Description" Value="Bu xizmat RustDesk Server'ni ishga tushiradi." />
+
+	<!-- Launch Conditions -->
+	<String Id="LC_OS" Value="[ProductName] operatsion tizim sifatida kamida Windows 7 / 2008 R2 ni talab qiladi." />
+	<String Id="LC_ADMIN" Value="[ProductName]'ni o'rnatish uchun administrator bo'lishingiz kerak." />
+
+	<!-- User Interfaces -->
+	<String Id="AnotherAppDialogTitle" Value="O'rnatishni bekor qilish."/>
+	<String Id="AnotherAppDialogDescription" Value="Dastur o'z-o'zini o'rnatish usuli bilan o'rnatilgan, avval uni o'chiring."/>
+
+	<String Id="MyInstallDirDlgDesktopShortcuts" Value="Ish stolida belgi yaratish" />
+	<String Id="MyInstallDirDlgStartMenuShortcuts" Value="Ishga tushirish menyusida yorliqlar yaratish" />
+	<String Id="MyInstallDirDlgPrinter" Value="RustDesk printerni o'rnatish" />
+
+</WixLocalization>

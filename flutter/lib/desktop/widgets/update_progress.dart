@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hbb/common.dart';
 import 'package:flutter_hbb/models/platform_model.dart';
 import 'package:get/get.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 final _isExtracting = false.obs;
 
@@ -144,18 +143,12 @@ class UpdateProgressState extends State<UpdateProgress> {
       dialogManager.dismissAll();
     }
 
-    jumplink() {
-      launchUrl(Uri.parse(widget.releasePageUrl));
-      dialogManager.dismissAll();
-    }
-
     retry() {
       dialogManager.dismissAll();
       handleUpdate(widget.releasePageUrl);
     }
 
     final List<Widget> buttons = [
-      dialogButton('Download', onPressed: jumplink),
       if (!isExtractDmg) dialogButton('Retry', onPressed: retry),
       dialogButton('Close', onPressed: close),
     ];

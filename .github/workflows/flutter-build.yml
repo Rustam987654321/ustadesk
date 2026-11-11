@@ -347,7 +347,8 @@ jobs:
       - name: Build msi
         # Builds the MSI for the matrix arch. res/msi (WiX v4 + native CustomActions) carries
         # both x64 and ARM64 platform configs; WcaUtil/DUtil ship arm64 libs. msbuild platform
-        # is x64 / ARM64; the produced Package.msi is globbed since its bin/<platform>/ dir varies.
+        # is x64 / ARM64. The culture comes from <Cultures> in Package/Package.wixproj
+        # (uz-uz), so the package lands in bin/<platform>/Release/uz-uz/.
         if: env.UPLOAD_ARTIFACT == 'true'
         run: |
           pushd ./res/msi
@@ -355,7 +356,16 @@ jobs:
           nuget restore msi.sln
           $msiPlatform = if ('${{ matrix.job.arch }}' -eq 'aarch64') { 'ARM64' } else { 'x64' }
           msbuild msi.sln -p:Configuration=Release -p:Platform=$msiPlatform /p:TargetVersion=Windows10
-          $msi = Get-ChildItem ./Package/bin/*/Release/en-us/Package.msi | Select-Object -First 1
+          # Fail loudly instead of silently shipping an English package if the
+          # uz-uz culture did not get built.
+          $msi = Get-ChildItem ./Package/bin/*/Release/uz-uz/Package.msi -ErrorAction SilentlyContinue |
+                 Select-Object -First 1
+          if (-not $msi) {
+            $built = (Get-ChildItem ./Package/bin/*/Release -Directory -ErrorAction SilentlyContinue |
+                      Select-Object -ExpandProperty Name) -join ', '
+            Write-Error "No uz-uz Package.msi was produced. Cultures built: '$built'"
+            exit 1
+          }
           mv $msi.FullName ../../SignOutput/rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}.msi
           sha256sum ../../SignOutput/rustdesk-*.msi
 

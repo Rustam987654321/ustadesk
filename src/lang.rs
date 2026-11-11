@@ -122,31 +122,22 @@ pub(crate) fn is_cjk_lang(lang_or_locale: &str) -> bool {
     matches!(lang.as_str(), "zh" | "ja" | "ko")
 }
 
+/// UstaDesk ships for the Uzbek market, so a fresh install always starts in
+/// Uzbek: the OS locale is deliberately ignored while no language has been
+/// chosen yet. A language picked in Settings is persisted in the local "lang"
+/// option and always takes precedence.
+const DEFAULT_LANG: &str = "uz";
+
 fn resolve_lang(saved_lang: &str, locale: &str, cjk_fallback: bool) -> String {
-    let locale = locale.to_lowercase();
-    let mut lang = saved_lang.to_lowercase();
-    if cjk_fallback && is_cjk_lang(&lang) {
-        return "en".to_owned();
-    }
-    if lang.is_empty() {
-        // zh_CN on Linux, zh-Hans-CN on mac, zh_CN_#Hans on Android
-        if locale.starts_with("zh") {
-            lang = (if locale.contains("tw") {
-                "zh-tw"
-            } else {
-                "zh-cn"
-            })
-            .to_owned();
-        }
-    }
-    if lang.is_empty() {
-        lang = locale
-            .split("-")
-            .next()
-            .map(|x| x.split("_").next().unwrap_or_default())
-            .unwrap_or_default()
-            .to_owned();
-    }
+    // `locale` stays in the signature for the callers and tests, but UstaDesk no
+    // longer derives the UI language from it -- see DEFAULT_LANG. (Upstream used
+    // it to guess the language on first launch and to tell zh-cn from zh-tw.)
+    let _ = locale;
+    let lang = if saved_lang.is_empty() {
+        DEFAULT_LANG.to_owned()
+    } else {
+        saved_lang.to_lowercase()
+    };
     if cjk_fallback && is_cjk_lang(&lang) {
         "en".to_owned()
     } else {
@@ -322,20 +313,32 @@ mod test {
     }
 
     #[test]
-    fn test_resolve_lang_forces_english_for_cjk_locale_when_target_disables_cjk() {
+    fn test_resolve_lang_defaults_to_uzbek_regardless_of_locale() {
         use super::resolve_lang as f;
 
-        assert_eq!(f("", "zh_CN", true), "en");
-        assert_eq!(f("", "ja-JP", true), "en");
-        assert_eq!(f("", "ko_KR", true), "en");
+        // UstaDesk: with no saved language the UI is Uzbek whatever the OS says,
+        // so the installer and the first launch come up in Uzbek.
+        assert_eq!(f("", "en-US", false), "uz");
+        assert_eq!(f("", "ru-RU", false), "uz");
+        assert_eq!(f("", "zh_CN", false), "uz");
+        assert_eq!(f("", "zh_TW", false), "uz");
+        assert_eq!(f("", "ja-JP", false), "uz");
+        assert_eq!(f("", "ko_KR", false), "uz");
+        assert_eq!(f("", "", false), "uz");
+        // ...including when the target build has no CJK UI at all.
+        assert_eq!(f("", "zh_CN", true), "uz");
+        assert_eq!(f("", "ja-JP", true), "uz");
     }
 
     #[test]
-    fn test_resolve_lang_preserves_cjk_when_target_allows_cjk() {
+    fn test_resolve_lang_keeps_a_saved_language() {
         use super::resolve_lang as f;
 
+        assert_eq!(f("uz", "en-US", false), "uz");
+        assert_eq!(f("ru", "en-US", false), "ru");
+        assert_eq!(f("en", "ru-RU", false), "en");
         assert_eq!(f("zh-cn", "en-US", false), "zh-cn");
-        assert_eq!(f("", "zh_TW", false), "zh-tw");
-        assert_eq!(f("", "ja-JP", false), "ja");
+        // the saved value is normalised to lower case
+        assert_eq!(f("ZH-TW", "en-US", false), "zh-tw");
     }
 }

@@ -4,6 +4,13 @@
     </IncludeSearchPaths>
     <Configurations>Release</Configurations>
     <Platforms>x64;ARM64</Platforms>
+    <!-- UstaDesk ships for the Uzbek market. WiX v4 defaults to en-US when
+         <Cultures> is absent, which would silently build an English MSI and
+         leave Package/Language/*uz-uz.wxl unused. Each culture listed here
+         emits its own Package.msi under bin/<platform>/Release/<culture>/.
+         The uz-uz set is complete: every !(loc.X) referenced by this project's
+         sources resolves from it (branding/verify_msi_lang.py checks this). -->
+    <Cultures>uz-uz</Cultures>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Includes.wxi" />
