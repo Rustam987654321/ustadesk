@@ -3695,13 +3695,16 @@ Widget loadPowered(BuildContext context) {
   // The attribution text is kept on purpose -- "powered_by_me" is the one
   // string the brand rule exempts from substitution. UstaDesk ships without
   // outbound links, so it is simply no longer clickable.
-  return Opacity(
-      opacity: 0.5,
-      child: Text(
-        translate("powered_by_me"),
-        overflow: TextOverflow.clip,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 9),
-      )).marginOnly(top: 6);
+  // Tone the text into the side-pane colour: a slightly lighter shade of the
+  // pane background, so it reads as a quiet watermark instead of a bright label.
+  final paneColor = Theme.of(context).colorScheme.background;
+  final textColor = Theme.of(context).textTheme.bodySmall?.color ?? paneColor;
+  final tonedColor = Color.lerp(paneColor, textColor, 0.3) ?? paneColor;
+  return Text(
+    translate("powered_by_me"),
+    overflow: TextOverflow.clip,
+    style: TextStyle(fontSize: 9, color: tonedColor),
+  ).marginOnly(top: 6);
 }
 
 const _kDefaultLogoAsset = 'assets/logo.png';

@@ -456,7 +456,7 @@ pub static ref T: std::collections::HashMap<&'static str, &'static str> =
         ("Minimize", "Kichraytirish"),
         ("Maximize", "Kattalashtirish"),
         ("Your Device", "Qurilmangiz"),
-        ("empty_recent_tip", "Afsus, so'nggi sessiyalar yo'q!\nYangasini rejalashtirish vaqti keldi."),
+        ("empty_recent_tip", "Afsus, so'nggi sessiyalar yo'q!\nYangisini rejalashtirish vaqti keldi."),
         ("empty_favorite_tip", "Hali sevimli qurilmalar yo'qmi?\nUlanadigan kimnidir topib, sevimlilarga qo'shing!"),
         ("empty_lan_tip", "Afsus, hali hech qanday qurilma topilmadi."),
         ("empty_address_book_tip", "Afsus, hozirda manzillar kitobingizda hech qanday qurilma yo'q."),
